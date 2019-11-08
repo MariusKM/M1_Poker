@@ -65,89 +65,74 @@ import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 @Entity
 @JsonbVisibility(JsonProtectedPropertyStrategy.class)
-@Table(schema = "poker", name = "Person", uniqueConstraints = @UniqueConstraint(columnNames = {"pokerTableReference", "position"}))
-@PrimaryKeyJoinColumn(name="personIdentity")
+@Table(schema = "poker", name = "Person", uniqueConstraints = @UniqueConstraint(columnNames = { "pokerTableReference", "position" }))
+@PrimaryKeyJoinColumn(name = "personIdentity")
 public class Person extends BaseEntity {
-	public enum Group{
+	public enum Group {
 		ADMIN, USER;
 	}
-	
+
 	static private final String DEFAULT_PASSWORD_HASH = HashCodes.sha2HashText(256, "password");
-	
+
 	@Column(nullable = false, updatable = true, unique = true)
-	@NotNull @Size(min=1, max=128) @Email
+	@NotNull
+	@Size(min = 1, max = 128)
+	@Email
 	private String email;
-	
+
 	@Column(nullable = false, updatable = true)
-	@NotNull @Size(min=64, max=64)
+	@NotNull
+	@Size(min = 64, max = 64)
 	private String passwordHash;
-	
+
 	@Column(nullable = false, updatable = true)
 	@PositiveOrZero
 	private long balance;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "groupAlias", nullable = false, updatable = true)
 	@NotNull
 	private Group group;
-	
+
 	@ElementCollection
-	@CollectionTable(
-			schema = "poker",
-			name = "PersonPhoneAssociation",
-			joinColumns = @JoinColumn(name = "personReference", nullable = false, updatable = true),
-			uniqueConstraints = @UniqueConstraint(columnNames = {"personReference", "phone"})
-	)
+	@CollectionTable(schema = "poker", name = "PersonPhoneAssociation", joinColumns = @JoinColumn(name = "personReference", nullable = false, updatable = true), uniqueConstraints = @UniqueConstraint(columnNames = { "personReference", "phone" }))
 	@NotNull
 	private Set<String> phones;
-	
+
 	@Embedded
 	@NotNull
 	@Valid
-	@AttributeOverrides({
-		@AttributeOverride(name = "title", column = @Column(name = "title")),
-		@AttributeOverride(name = "family", column = @Column(name = "surname")),
-		@AttributeOverride(name = "given", column = @Column(name = "forename")),		
-	})
+	@AttributeOverrides({ @AttributeOverride(name = "title", column = @Column(name = "title")), @AttributeOverride(name = "family", column = @Column(name = "surname")), @AttributeOverride(name = "given", column = @Column(name = "forename")), })
 	private Name name;
-	
+
 	@Embedded
 	@NotNull
 	@Valid
-	@AttributeOverrides({
-		@AttributeOverride(name = "street", column = @Column(name = "street")),
-		@AttributeOverride(name = "postcode", column = @Column(name = "postcode")),
-		@AttributeOverride(name = "city", column = @Column(name = "city")),
-		@AttributeOverride(name = "country", column = @Column(name = "country")),
-	})
+	@AttributeOverrides({ @AttributeOverride(name = "street", column = @Column(name = "street")), @AttributeOverride(name = "postcode", column = @Column(name = "postcode")), @AttributeOverride(name = "city", column = @Column(name = "city")), @AttributeOverride(name = "country", column = @Column(name = "country")), })
 	private Address address;
-	
+
 	@Embedded
 	@Valid
-	@AttributeOverrides({
-		@AttributeOverride(name = "offer", column = @Column(name = "negotiationOffer")),
-		@AttributeOverride(name = "answer", column = @Column(name = "negotiationAnswer")),
-		@AttributeOverride(name = "timestamp", column = @Column(name = "negotiationTimestamp")),		
-	})
+	@AttributeOverrides({ @AttributeOverride(name = "offer", column = @Column(name = "negotiationOffer")), @AttributeOverride(name = "answer", column = @Column(name = "negotiationAnswer")), @AttributeOverride(name = "timestamp", column = @Column(name = "negotiationTimestamp")), })
 	private Negotiation negotiation;
 
 	@Column(nullable = true, updatable = true)
 	@PositiveOrZero
 	private Byte position;
-	
-	//TODO: on delete restrict
-	@ManyToOne(optional = true, cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
-	@JoinColumn(name="pokerTableReference", nullable = true, updatable = true)
+
+	// TODO: on delete restrict
+	@ManyToOne(optional = true, cascade = { CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
+	@JoinColumn(name = "pokerTableReference", nullable = true, updatable = true)
 	private PokerTable table;
-	
-	//TODO: on delete restrict
-	@ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
-	@JoinColumn(name="avatarReference", nullable = false, updatable = true)
+
+	// TODO: on delete restrict
+	@ManyToOne(optional = false, cascade = { CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
+	@JoinColumn(name = "avatarReference", nullable = false, updatable = true)
 	private Document avatar;
-	
-	//TODO: why no reference to Hand?
-	
-	public Person() {
+
+	// TODO: why no reference to Hand?
+
+	public Person () {
 		super();
 		this.passwordHash = DEFAULT_PASSWORD_HASH;
 		this.group = Group.USER;
@@ -155,103 +140,117 @@ public class Person extends BaseEntity {
 		this.address = new Address();
 		this.phones = new HashSet<>();
 	}
-    
-	public Name getName() {
+
+
+	public Name getName () {
 		return null;
 	}
-	
-	protected void setName(Name name) {
+
+
+	protected void setName (Name name) {
 		this.name = name;
 	}
-	
-	public Address getAddress() {
+
+
+	public Address getAddress () {
 		return address;
 	}
 
-	protected void setAddress(Address address) {
+
+	protected void setAddress (Address address) {
 		this.address = address;
 	}
 
-	public Negotiation getNegotiation() {
+
+	public Negotiation getNegotiation () {
 		return negotiation;
 	}
 
-	protected void setNegotiation(Negotiation negotiation) {
+
+	protected void setNegotiation (Negotiation negotiation) {
 		this.negotiation = negotiation;
 	}
 
-	public String getEmail() {
+
+	public String getEmail () {
 		return email;
 	}
 
-	protected void setEmail(String email) {
+
+	protected void setEmail (String email) {
 		this.email = email;
 	}
-	
-	public PokerTable getPoker() {
+
+
+	public PokerTable getPoker () {
 		return this.table;
 	}
-	
+
+
 	protected void setPoker (PokerTable table) {
 		this.table = table;
 	}
-	
-	public Group getGroup() {
+
+
+	public Group getGroup () {
 		return group;
 	}
-	
-	public  void setGroup(Group group) {
+
+
+	public void setGroup (Group group) {
 		this.group = group;
 	}
-	
-	public String getPasswordHash() {
+
+
+	public String getPasswordHash () {
 		return passwordHash;
 	}
 
-	public void setPasswordHash(String passwordHash) {
+
+	public void setPasswordHash (String passwordHash) {
 		this.passwordHash = passwordHash;
 	}
 
 
-	public Set<String> getPhones() {
+	public Set<String> getPhones () {
 		return phones;
 	}
 
 
-	protected void setPhones(Set<String> phones) {
+	protected void setPhones (Set<String> phones) {
 		this.phones = phones;
 	}
 
 
-	public long getBalance() {
+	public long getBalance () {
 		return balance;
 	}
 
 
-	protected void setBalance(long balance) {
+	protected void setBalance (long balance) {
 		this.balance = balance;
 	}
 
 
-	public Byte getPosition() {
+	public Byte getPosition () {
 		return position;
 	}
 
 
-	protected void setPosition(Byte position) {
+	protected void setPosition (Byte position) {
 		this.position = position;
 	}
-	
+
+
 	@JsonbProperty
-	protected long getAvatarReference() {
-		//TODO: implement Lennard
-		return 0;
+	protected long getAvatarReference () {
+		return this.avatar == null ? 0 : this.avatar.getIdentity();
 	}
-	
+
+
 	@JsonbProperty
-	protected Long getTableReference() {
-		//TODO: implement Lennard
-		return 0L;
+	protected Long getTableReference () {
+		return this.table == null ? 0 : this.table.getIdentity();
 	}
-	
+
 }

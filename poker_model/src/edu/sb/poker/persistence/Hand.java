@@ -58,106 +58,113 @@ import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 @Table(schema = "poker", name = "Hand")
 @PrimaryKeyJoinColumn(name = "handIdentity")
 public class Hand extends BaseEntity {
-	
+
 	@Column(nullable = false, updatable = true)
 	private long bet;
-	
+
 	@Column(nullable = false, updatable = true)
 	private boolean active;
-	
+
 	@Column(nullable = false, updatable = true)
 	private boolean folded;
-	
-	@ManyToOne(optional =  false)
+
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "gameReference", nullable = false, updatable = true)
 	private Game game;
-	
-	@ManyToOne(optional =  false)
-	@JoinColumn(name = "playerReference", nullable = true, updatable = true) 
-	private Person player;
-	
-	//TODO: annotation for handcardassociation table; make sure it is exactly 5 cards
-	@ManyToMany
-	@JoinTable(
-			schema = "poker",
-			name = "HandCardAssociation",
-			joinColumns = @JoinColumn (name = "handReference", nullable = false, updatable = false, insertable = true),
-			inverseJoinColumns = @JoinColumn (name = "cardReference", nullable = false, updatable = false, insertable = true),
-			uniqueConstraints = @UniqueConstraint (columnNames = { "handReference", "cardReference" })
-	)
-	private Set<Card> cards;
-	
 
-	
-	public Hand() {
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "playerReference", nullable = true, updatable = true)
+	private Person player;
+
+	// TODO: annotation for handcardassociation table; make sure it is exactly 5 cards
+	@ManyToMany
+	@JoinTable(schema = "poker", name = "HandCardAssociation", joinColumns = @JoinColumn(name = "handReference", nullable = false, updatable = false, insertable = true), inverseJoinColumns = @JoinColumn(name = "cardReference", nullable = false, updatable = false, insertable = true), uniqueConstraints = @UniqueConstraint(columnNames = { "handReference", "cardReference" }))
+	private Set<Card> cards;
+
+	public Hand () {
 		this.cards = new HashSet<>();
 	}
-	
-	public Game getGame() {
+
+
+	public Game getGame () {
 		return game;
 	}
-	
-	public void setGame(Game game) {
+
+
+	public void setGame (Game game) {
 		this.game = game;
 	}
-	
+
+
 	public Person getPlayer () {
 		return player;
 	}
+
 
 	public void setPlayer (Person player) {
 		this.player = player;
 	}
 
-	public long getBet() {
+
+	public long getBet () {
 		return bet;
 	}
-	
-	public void setBet(long bet) {
+
+
+	public void setBet (long bet) {
 		this.bet = bet;
 	}
-	
-	public boolean getActive() {
+
+
+	public boolean getActive () {
 		return active;
 	}
-	
-	public void setActive(boolean active) {
+
+
+	public void setActive (boolean active) {
 		this.active = active;
 	}
-	
-	public boolean getFolded() {
+
+
+	public boolean getFolded () {
 		return folded;
 	}
-	
-	public void setFolded(boolean folded) {
+
+
+	public void setFolded (boolean folded) {
 		this.folded = folded;
 	}
-	
-	public byte getPosition() {
+
+
+	public byte getPosition () {
 		return this.player == null || this.player.getPosition() == null ? -1 : this.player.getPosition();
 	}
-	
+
+
 	public Set<Card> getCards () {
 		return cards;
 	}
+
 
 	protected void setCards (Set<Card> cards) {
 		this.cards = cards;
 	}
 
+
 	@JsonbProperty
-	protected long getGameReference() {
-		//TODO: implement Katrina
-		return 0;
+	protected long getGameReference () {
+		return this.game == null ? 0 : this.game.getIdentity();
+
 	}
-	
+
+
 	@JsonbProperty
-	protected Long getPlayerReference() {
-		//TODO: implement Katrina
-		return 0L;
+	protected Long getPlayerReference () {
+		return this.player == null ? 0 : this.player.getIdentity();
 	}
-	
-	public boolean isAllIn() {
+
+
+	public boolean isAllIn () {
 		if (player != null && bet > 0 && player.getBalance() == 0) {
 			return true;
 		}

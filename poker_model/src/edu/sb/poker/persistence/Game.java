@@ -122,8 +122,7 @@ public class Game extends BaseEntity{
 	
 	@JsonbProperty
 	protected long getTableReference() {
-		//TODO: implement Katrina
-		return 0;
+		return this.table == null ? 0 : this.table.getIdentity();
 	}
 	
 	@JsonbProperty
