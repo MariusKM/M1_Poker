@@ -2,31 +2,19 @@ package edu.sb.poker.persistence;
 
 import java.util.Collections;
 import java.util.Set;
-
 import javax.json.bind.annotation.JsonbProperty;
-import javax.json.bind.annotation.JsonbTransient;
 import javax.json.bind.annotation.JsonbVisibility;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-import org.eclipse.persistence.annotations.CacheIndex;
-import edu.sb.poker.util.Copyright;
-import edu.sb.poker.util.HashCodes;
 import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 
@@ -74,7 +62,7 @@ public class Game extends BaseEntity{
 	@ManyToOne(optional = false, cascade = {CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
 	@JoinColumn(name = "pokerTableReference", nullable = false, updatable = true)
 	@NotNull
-	private PokerTable pokerTable;
+	private PokerTable table;
 	
 	public enum State{
 		DEAL, DEAL_BET, DRAW, DRAW_BET, SHOWDOWN;
@@ -98,18 +86,18 @@ public class Game extends BaseEntity{
 	
 	public Game(State state) {
 		super();
-		this.pokerTable = new PokerTable();
+		this.table = new PokerTable();
 		this.state = state;
 		this.hands = Collections.emptySet();
 		this.activityTimestamp = 0;
 	}
 	
-	public PokerTable getPokerTable() {
-		return pokerTable;
+	public PokerTable getTable() {
+		return table;
 	}
 	
-	protected void setPokerTable(PokerTable pokerTable) {
-		this.pokerTable = pokerTable;
+	protected void setTable(PokerTable table) {
+		this.table = table;
 	}
 	
 	public State getState() {

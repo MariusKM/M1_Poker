@@ -1,8 +1,8 @@
 package edu.sb.poker.util;
 
+import static edu.sb.poker.util.NumeralSystems.toHexadecimal;
 import static java.lang.String.valueOf;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static edu.sb.poker.util.NumeralSystems.toHexadecimal;
 import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

@@ -1,12 +1,10 @@
 package edu.sb.poker.persistence;
 
 import java.util.Comparator;
-
 import javax.json.bind.annotation.JsonbVisibility;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.Size;
-
 import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 @Embeddable

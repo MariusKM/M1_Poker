@@ -1,27 +1,20 @@
 package edu.sb.poker.persistence;
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.json.bind.annotation.JsonbProperty;
-import javax.json.bind.annotation.JsonbTransient;
 import javax.json.bind.annotation.JsonbVisibility;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-import org.eclipse.persistence.annotations.CacheIndex;
-import edu.sb.poker.util.Copyright;
-import edu.sb.poker.util.HashCodes;
 import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 
@@ -64,59 +57,63 @@ import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 @JsonbVisibility(JsonProtectedPropertyStrategy.class)
 @Table(schema = "poker", name = "Hand")
 @PrimaryKeyJoinColumn(name = "handIdentity")
-public class Hand extends BaseEntity{
+public class Hand extends BaseEntity {
 	
 	@Column(nullable = false, updatable = true)
-	@NotNull
 	private long bet;
 	
 	@Column(nullable = false, updatable = true)
-	@NotNull
 	private boolean active;
 	
 	@Column(nullable = false, updatable = true)
-	@NotNull
 	private boolean folded;
 	
-	@ManyToOne(optional =  false, cascade = {CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
+	@ManyToOne(optional =  false)
 	@JoinColumn(name = "gameReference", nullable = false, updatable = true)
-	@NotNull 
 	private Game game;
 	
-	@ManyToOne(optional =  false, cascade = {CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
+	@ManyToOne(optional =  false)
 	@JoinColumn(name = "playerReference", nullable = true, updatable = true) 
 	private Person player;
 	
 	//TODO: annotation for handcardassociation table; make sure it is exactly 5 cards
 	@ManyToMany
-	private Hand hand;
+	@JoinTable(
+			schema = "poker",
+			name = "HandCardAssociation",
+			joinColumns = @JoinColumn (name = "handReference", nullable = false, updatable = false, insertable = true),
+			inverseJoinColumns = @JoinColumn (name = "cardReference", nullable = false, updatable = false, insertable = true),
+			uniqueConstraints = @UniqueConstraint (columnNames = { "handReference", "cardReference" })
+	)
+	private Set<Card> cards;
 	
-	protected Hand() {
-		this(null, null);
-	}
+
 	
-	public Hand(Boolean active, Boolean folded) {
-		super();
-		this.game = new Game();
-		this.player = new Person();
-		this.bet = 0;
-		this.active = active;
-		this.folded = folded;
+	public Hand() {
+		this.cards = new HashSet<>();
 	}
 	
 	public Game getGame() {
 		return game;
 	}
 	
-	protected void setGame(Game game) {
+	public void setGame(Game game) {
 		this.game = game;
 	}
 	
+	public Person getPlayer () {
+		return player;
+	}
+
+	public void setPlayer (Person player) {
+		this.player = player;
+	}
+
 	public long getBet() {
 		return bet;
 	}
 	
-	protected void setBet(long bet) {
+	public void setBet(long bet) {
 		this.bet = bet;
 	}
 	
@@ -124,7 +121,7 @@ public class Hand extends BaseEntity{
 		return active;
 	}
 	
-	protected void setActive(boolean active) {
+	public void setActive(boolean active) {
 		this.active = active;
 	}
 	
@@ -132,17 +129,22 @@ public class Hand extends BaseEntity{
 		return folded;
 	}
 	
-	protected void setFolded(boolean folded) {
+	public void setFolded(boolean folded) {
 		this.folded = folded;
 	}
 	
 	public byte getPosition() {
-		if (player == null || player.getPosition() == null) {
-			return -1;
-		}
-		return player.getPosition();
+		return this.player == null || this.player.getPosition() == null ? -1 : this.player.getPosition();
 	}
 	
+	public Set<Card> getCards () {
+		return cards;
+	}
+
+	protected void setCards (Set<Card> cards) {
+		this.cards = cards;
+	}
+
 	@JsonbProperty
 	protected long getGameReference() {
 		//TODO: implement Katrina

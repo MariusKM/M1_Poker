@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/eclipse-link"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jaxb-glassfish"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jdbc-maria"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jfx"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jrs-jersey"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/json-yasson"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jval-hibernate"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/server-api"/>
+	<classpathentry kind="src" path="poker_model/src"/>
+	<classpathentry kind="lib" path="C:/Users/Tea/Desktop/poker-model-base.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Tea/Desktop/poker-web-base.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

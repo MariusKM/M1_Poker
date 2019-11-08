@@ -56,83 +56,93 @@ import edu.sb.poker.util.JsonProtectedPropertyStrategy;
  */
 
 @Entity
-@JsonbVisibility(JsonProtectedPropertyStrategy.class)
 @Table(schema = "poker", name = "PokerTable")
 @PrimaryKeyJoinColumn(name = "pokerTableIdentity")
-public class PokerTable extends BaseEntity{
-	
-	@NotNull @Size(min = 1, max = 32)
-	@NotEmpty
-	@Column(nullable = false, updatable = true, length = 32, unique = true)
+@JsonbVisibility(JsonProtectedPropertyStrategy.class)
+public class PokerTable extends BaseEntity {
+
+	@NotNull
+	@Size(min = 1, max = 32)
+	@Column(nullable = false, updatable = false, insertable = true, length = 32, unique = true)
 	private String alias;
-	
-	//TODO: on delete restrict
-	@ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
-	@JoinColumn(name="avatarReference", nullable = false, updatable = true)
+
+	@ManyToOne(optional = false, cascade = { CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
+	@JoinColumn(name = "avatarReference", nullable = false, updatable = true)
 	private Document avatar;
-	
-	@OneToMany(mappedBy= "poker")
+
+	@OneToMany(mappedBy = "table", cascade = { CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
 	private Set<Person> players;
-	
-	@OneToMany(mappedBy = "pokerTable")
+
+	@OneToMany(mappedBy = "table", cascade = { CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
 	private Set<Game> games;
-	
-	protected PokerTable() {
+
+	protected PokerTable () {
 		this(null);
 	}
-	
-	public PokerTable(String alias) {
+
+
+	public PokerTable (String alias) {
 		super();
 		this.alias = alias;
 	}
 
-	public String getAlias() {
+
+	public String getAlias () {
 		return alias;
 	}
 
-	protected void setAlias(String alias) {
+
+	protected void setAlias (String alias) {
 		this.alias = alias;
 	}
 
-	public Document getDocument() {
+
+	public Document getDocument () {
 		return avatar;
 	}
 
-	protected void setDocument(Document avatar) {
+
+	public void setDocument (Document avatar) {
 		this.avatar = avatar;
 	}
 
-	public Set<Person> getPlayers() {
+
+	public Set<Person> getPlayers () {
 		return players;
 	}
 
-	protected void setPlayers(Set<Person> players) {
+
+	protected void setPlayers (Set<Person> players) {
 		this.players = players;
 	}
 
-	public Set<Game> getGames() {
+
+	public Set<Game> getGames () {
 		return games;
 	}
 
-	protected void setGames(Set<Game> games) {
+
+	protected void setGames (Set<Game> games) {
 		this.games = games;
 	}
-	
+
+
 	@JsonbProperty
-	protected long getAvatarReference() {
-		//TODO: implement Mareike
-		return 0;
+	protected long getAvatarReference () {
+		return this.avatar == null ? 0 : this.avatar.getIdentity();
 	}
-	
+
+
 	@JsonbProperty
-	protected long[] getGameReference() {
-		//TODO: implement Mareike
-		return new long[1];
+	protected long[] getGameReference () {
+		// TODO: collection-streams 
+		return new long[0];
 	}
-	
+
+
 	@JsonbProperty
-	protected long[] getPlayerReference() {
-		//TODO: implement Mareike
+	protected long[] getPlayerReference () {
+		// TODO: implement Mareike
 		return new long[1];
 	}
 }

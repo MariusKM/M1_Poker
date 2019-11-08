@@ -1,7 +1,7 @@
 package edu.sb.poker.util;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static edu.sb.poker.util.NumeralSystems.toHexadecimal;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 

@@ -1,27 +1,15 @@
 package edu.sb.poker.persistence;
 
-import javax.json.bind.annotation.JsonbProperty;
-import javax.json.bind.annotation.JsonbTransient;
 import javax.json.bind.annotation.JsonbVisibility;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Index;
 import javax.persistence.ManyToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-import org.eclipse.persistence.annotations.CacheIndex;
-import edu.sb.poker.util.Copyright;
-import edu.sb.poker.util.HashCodes;
 import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 
@@ -64,30 +52,26 @@ import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 @JsonbVisibility(JsonProtectedPropertyStrategy.class)
 @Table(schema = "poker", name = "Card", uniqueConstraints = @UniqueConstraint(columnNames = {"suitAlias", "rankAlias"}))
 @PrimaryKeyJoinColumn(name = "cardIdentity")
-public class Card extends BaseEntity{
-	public static enum Suit{
+public class Card extends BaseEntity {
+	public static enum Suit {
 		DIAMONDS, HEARTS, SPADES, CLUBS;
 	}
 	
-	public static enum Rank{
+	public static enum Rank {
 		ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING;
 	}
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "suitAlias", nullable = false, updatable = true)
+	@Column(name = "suitAlias", nullable = false, updatable = false, insertable = true)
 	@NotNull
 	private Suit suit;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "rankAlias", nullable = false, updatable = true)
+	@Column(name = "rankAlias", nullable = false, updatable = false, insertable = true)
 	@NotNull
 	private Rank rank;
 	
-	//TODO: annotation for handcardassociation table
-	@ManyToMany
-	private Hand hand;
 	
-	//TODO: check when we need constructors and when not
 	protected Card() {
 		this(null, null);
 	}

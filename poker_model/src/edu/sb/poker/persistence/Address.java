@@ -1,7 +1,6 @@
 package edu.sb.poker.persistence;
 
 import java.util.Comparator;
-
 import javax.json.bind.annotation.JsonbVisibility;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

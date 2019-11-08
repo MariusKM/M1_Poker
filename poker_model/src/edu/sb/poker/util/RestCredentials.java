@@ -2,6 +2,7 @@ package edu.sb.poker.util;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.WebApplicationException;
 
 
 /**

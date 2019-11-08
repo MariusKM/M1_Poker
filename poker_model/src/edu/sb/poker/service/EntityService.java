@@ -1,7 +1,7 @@
 package edu.sb.poker.service;
 
 import static edu.sb.poker.persistence.Person.Group.ADMIN;
-import static edu.sb.poker.service.BasicAuthenticationFilter.REQUESTER_IDENTITY;
+import static edu.sb.poker.service.BasicAuthenticationFilterSkeleton.REQUESTER_IDENTITY;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
