@@ -132,7 +132,7 @@ public class Document extends BaseEntity {
 	 * Sets the type.
 	 * @param type the content type
 	 */
-	protected void setType (final String type) {
+	public void setType (final String type) {
 		this.type = type;
 	}
 

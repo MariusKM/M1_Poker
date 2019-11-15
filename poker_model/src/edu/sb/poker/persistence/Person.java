@@ -130,6 +130,7 @@ public class Person extends BaseEntity {
 	@JoinColumn(name = "avatarReference", nullable = false, updatable = true)
 	private Document avatar;
 
+
 	// TODO: why no reference to Hand?
 
 	public Person () {
@@ -239,6 +240,11 @@ public class Person extends BaseEntity {
 
 	protected void setPosition (Byte position) {
 		this.position = position;
+	}
+
+
+	public void setAvatarReference (long id) {
+		this.avatar.setIdentity(id);
 	}
 
 
