@@ -2,9 +2,9 @@ package edu.sb.poker.persistence;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.json.bind.annotation.JsonbProperty;
 import javax.json.bind.annotation.JsonbVisibility;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -15,6 +15,14 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
 import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 
@@ -55,119 +63,115 @@ import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 @Entity
 @JsonbVisibility(JsonProtectedPropertyStrategy.class)
+@XmlType @XmlRootElement
 @Table(schema = "poker", name = "Hand")
 @PrimaryKeyJoinColumn(name = "handIdentity")
-public class Hand extends BaseEntity {
-
+public class Hand extends BaseEntity{
+	
 	@Column(nullable = false, updatable = true)
+	@PositiveOrZero
 	private long bet;
-
+	
 	@Column(nullable = false, updatable = true)
 	private boolean active;
-
+	
 	@Column(nullable = false, updatable = true)
 	private boolean folded;
-
+	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "gameReference", nullable = false, updatable = true)
+	@JoinColumn(name = "gameReference", nullable = false, updatable = false, insertable = true)
+	@NotNull 
 	private Game game;
-
+	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "playerReference", nullable = true, updatable = true)
+	@JoinColumn(name = "playerReference", nullable = true, updatable = false, insertable = true) 
 	private Person player;
-
-	// TODO: annotation for handcardassociation table; make sure it is exactly 5 cards
+	
 	@ManyToMany
-	@JoinTable(schema = "poker", name = "HandCardAssociation", joinColumns = @JoinColumn(name = "handReference", nullable = false, updatable = false, insertable = true), inverseJoinColumns = @JoinColumn(name = "cardReference", nullable = false, updatable = false, insertable = true), uniqueConstraints = @UniqueConstraint(columnNames = { "handReference", "cardReference" }))
+	@JoinTable(
+		schema = "poker",
+		name="HandCardAssociation",
+		joinColumns=@JoinColumn(name="handReference"),
+		inverseJoinColumns=@JoinColumn(name="cardReference"),
+		uniqueConstraints = @UniqueConstraint(columnNames = {"handReference", "cardReference"}))
+	@NotNull
+	@Size(min = 5, max = 5)
 	private Set<Card> cards;
 
-	public Hand () {
+	public Hand() {
+		super();
 		this.cards = new HashSet<>();
 	}
-
-
-	public Game getGame () {
+	
+	@JsonbProperty @XmlElement
+	public Game getGame() {
 		return game;
 	}
-
-
-	public void setGame (Game game) {
+	
+	public void setGame(Game game) {
 		this.game = game;
 	}
-
-
-	public Person getPlayer () {
-		return player;
-	}
-
-
-	public void setPlayer (Person player) {
-		this.player = player;
-	}
-
-
-	public long getBet () {
+	
+	@JsonbProperty @XmlAttribute
+	public long getBet() {
 		return bet;
 	}
-
-
-	public void setBet (long bet) {
+	
+	public void setBet(long bet) {
 		this.bet = bet;
 	}
-
-
-	public boolean getActive () {
+	
+	@JsonbProperty @XmlElement
+	public Person getPlayer() {
+		return this.player;
+	}
+	
+	public void setPlayer(Person player) {
+		this.player = player;
+	}
+	
+	@JsonbProperty @XmlAttribute
+	public boolean getActive() {
 		return active;
 	}
-
-
-	public void setActive (boolean active) {
+	
+	public void setActive(boolean active) {
 		this.active = active;
 	}
-
-
-	public boolean getFolded () {
+	
+	@JsonbProperty @XmlAttribute
+	public boolean getFolded() {
 		return folded;
 	}
-
-
-	public void setFolded (boolean folded) {
+	
+	public void setFolded(boolean folded) {
 		this.folded = folded;
 	}
 
-
-	public byte getPosition () {
-		return this.player == null || this.player.getPosition() == null ? -1 : this.player.getPosition();
+	@JsonbProperty @XmlAttribute
+	public byte getPosition() {
+		return this.player == null ? -1 : this.player.getPosition();
 	}
-
-
-	public Set<Card> getCards () {
+	
+	public Set<Card> getCards() {
 		return cards;
 	}
 
-
-	protected void setCards (Set<Card> cards) {
+	public void setCards(Set<Card> cards) {
 		this.cards = cards;
 	}
-
-
-	@JsonbProperty
-	protected long getGameReference () {
+	
+	@JsonbProperty @XmlTransient
+	protected long getGameReference() {
 		return this.game == null ? 0 : this.game.getIdentity();
-
 	}
-
-
-	@JsonbProperty
-	protected Long getPlayerReference () {
-		return this.player == null ? 0 : this.player.getIdentity();
+	
+	@JsonbProperty @XmlTransient
+	protected Long getPlayerReference() {
+		return this.player == null ? null : this.player.getIdentity();
 	}
-
-
-	public boolean isAllIn () {
-		if (player != null && bet > 0 && player.getBalance() == 0) {
-			return true;
-		}
-		return false;
+	
+	public boolean isAllIn() {
+		return this.player != null && this.bet > 0 && this.player.getBalance() == 0;
 	}
 }

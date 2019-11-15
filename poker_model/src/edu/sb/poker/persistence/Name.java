@@ -1,11 +1,20 @@
 package edu.sb.poker.persistence;
 
+import static javax.xml.bind.annotation.XmlAccessType.NONE;
+
 import java.util.Comparator;
+
+import javax.json.bind.annotation.JsonbProperty;
 import javax.json.bind.annotation.JsonbVisibility;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 
@@ -46,8 +55,12 @@ import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 @Embeddable
 @JsonbVisibility(JsonProtectedPropertyStrategy.class)
+@XmlAccessorType(NONE)
+@XmlType @XmlRootElement
 public class Name implements Comparable<Name>{
-	static private final Comparator<Name> COMPARATOR = Comparator.comparing(Name::getFamily).thenComparing(Name::getGiven);
+	static private final Comparator<Name> COMPARATOR = Comparator.comparing(Name::getTitle, Comparator.nullsLast(Comparator.naturalOrder()))
+			.thenComparing(Name::getFamily)
+			.thenComparing(Name::getGiven);
 	
 	@Column(nullable = true, updatable = true)
 	@Size(min = 1, max = 15)
@@ -63,27 +76,30 @@ public class Name implements Comparable<Name>{
 	@Size(min = 1, max = 32)
 	private String given;
 	
+	@JsonbProperty @XmlAttribute
 	public String getTitle(){
 		return this.title;
 	}
 	
-	protected void setTitle(String title) {
+	public void setTitle(String title) {
 		this.title = title;
 	}
 	
+	@JsonbProperty @XmlAttribute
 	public String getFamily() {
 		return this.family;
 	}
 	
-	protected void setFamily(String family) {
+	public void setFamily(String family) {
 		this.family = family;
 	}
 	
+	@JsonbProperty @XmlAttribute
 	public String getGiven() {
 		return this.given;
 	}
 	
-	protected void setGiven(String given) {
+	public void setGiven(String given) {
 		this.given = given;
 	}
 

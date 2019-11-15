@@ -1,15 +1,19 @@
 package edu.sb.poker.persistence;
 
+import javax.json.bind.annotation.JsonbProperty;
 import javax.json.bind.annotation.JsonbVisibility;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 
@@ -50,14 +54,15 @@ import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 @Entity
 @JsonbVisibility(JsonProtectedPropertyStrategy.class)
+@XmlType @XmlRootElement
 @Table(schema = "poker", name = "Card", uniqueConstraints = @UniqueConstraint(columnNames = {"suitAlias", "rankAlias"}))
 @PrimaryKeyJoinColumn(name = "cardIdentity")
-public class Card extends BaseEntity {
-	public static enum Suit {
+public class Card extends BaseEntity{
+	static public enum Suit{
 		DIAMONDS, HEARTS, SPADES, CLUBS;
 	}
 	
-	public static enum Rank {
+	static public enum Rank{
 		ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING;
 	}
 
@@ -71,7 +76,6 @@ public class Card extends BaseEntity {
 	@NotNull
 	private Rank rank;
 	
-	
 	protected Card() {
 		this(null, null);
 	}
@@ -82,6 +86,8 @@ public class Card extends BaseEntity {
 		this.rank = rank;
 	}
 	
+	@JsonbProperty
+	@XmlAttribute
 	public Suit getSuit() {
 		return suit;
 	}
@@ -90,6 +96,7 @@ public class Card extends BaseEntity {
 		this.suit = suit;
 	}
 	
+	@JsonbProperty
 	public Rank getRank() {
 		return rank;
 	}

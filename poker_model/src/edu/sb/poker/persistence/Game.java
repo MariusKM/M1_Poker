@@ -1,8 +1,11 @@
 package edu.sb.poker.persistence;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Set;
+
 import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.json.bind.annotation.JsonbVisibility;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,6 +18,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
 import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 
@@ -55,87 +64,87 @@ import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 @Entity
 @JsonbVisibility(JsonProtectedPropertyStrategy.class)
+@XmlType @XmlRootElement
 @Table(schema = "poker", name = "Game")
 @PrimaryKeyJoinColumn(name = "gameIdentity")
 public class Game extends BaseEntity{
 	
-	@ManyToOne(optional = false, cascade = {CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
-	@JoinColumn(name = "pokerTableReference", nullable = false, updatable = true)
-	@NotNull
-	private PokerTable table;
-	
-	public enum State{
+	static public enum State{
 		DEAL, DEAL_BET, DRAW, DRAW_BET, SHOWDOWN;
 	}
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "pokerTableReference", nullable = false, updatable = false, insertable = true)
+	@NotNull
+	private PokerTable table;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "stateAlias", nullable = false, updatable = true)
 	@NotNull
 	private State state;
 	
-	@OneToMany(mappedBy = "game")
+	@OneToMany(mappedBy = "game", cascade = {CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
+	@NotNull
 	private Set<Hand> hands;
 	
 	@Column(nullable = false, updatable = true)
-	@NotNull
 	private long activityTimestamp;
 	
 	protected Game() {
 		this(null);
 	}
 	
-	public Game(State state) {
+	public Game(PokerTable table) {
 		super();
-		this.table = new PokerTable();
-		this.state = state;
+		this.table = table;
+		this.state = State.DEAL;
 		this.hands = Collections.emptySet();
-		this.activityTimestamp = 0;
 	}
 	
+	@JsonbProperty @XmlElement
 	public PokerTable getTable() {
 		return table;
 	}
 	
-	protected void setTable(PokerTable table) {
+	public void setTable(PokerTable table) {
 		this.table = table;
 	}
 	
+	@JsonbProperty
 	public State getState() {
 		return state;
 	}
 	
-	protected void setState(State state) {
+	public void setState(State state) {
 		this.state = state;
 	}
 	
+	@JsonbTransient @XmlTransient
 	public Set<Hand> getHands(){
 		return hands;
 	}
 	
+	@JsonbProperty @XmlAttribute
 	public long getActivityTimestamp() {
 		return activityTimestamp;
 	}
 	
-	protected void setActivityTimestamp(long activityTimestamp) {
+	public void setActivityTimestamp(long activityTimestamp) {
 		this.activityTimestamp = activityTimestamp;
 	}
 	
-	@JsonbProperty
+	@JsonbProperty @XmlTransient
 	protected long getTableReference() {
 		return this.table == null ? 0 : this.table.getIdentity();
 	}
 	
-	@JsonbProperty
+	@JsonbProperty @XmlTransient
 	protected long[] getHandReference() {
-		//TODO: implement Katrina
-		return new long[1];
+		return this.getHands().stream().mapToLong(hand -> hand.getIdentity()).sorted().toArray();
 	}
 	
 	public long getMaxBet() {
-		long maxBet = 0;
-		for(Hand hand: hands) {
-			maxBet += hand.getBet();			
-		}
-		return maxBet;
+		
+		return this.getHands().stream().max(Comparator.comparingLong(hand -> hand.getBet())).get().getBet();
 	}
 }

@@ -1,7 +1,11 @@
 package edu.sb.poker.persistence;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Set;
+
 import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.json.bind.annotation.JsonbVisibility;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,6 +17,12 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
 import edu.sb.poker.util.JsonProtectedPropertyStrategy;
 
 
@@ -52,93 +62,89 @@ import edu.sb.poker.util.JsonProtectedPropertyStrategy;
  */
 
 @Entity
+@JsonbVisibility(JsonProtectedPropertyStrategy.class)
+@XmlType @XmlRootElement
 @Table(schema = "poker", name = "PokerTable")
 @PrimaryKeyJoinColumn(name = "pokerTableIdentity")
-@JsonbVisibility(JsonProtectedPropertyStrategy.class)
-public class PokerTable extends BaseEntity {
-
-	@NotNull
-	@Size(min = 1, max = 32)
+public class PokerTable extends BaseEntity{
+	
+	static public final Comparator<PokerTable> ALIAS_COMPARATOR = Comparator.comparing(PokerTable::getAlias);
+	
+	@NotNull @Size(min = 1, max = 32)
 	@Column(nullable = false, updatable = false, insertable = true, length = 32, unique = true)
 	private String alias;
-
-	@ManyToOne(optional = false, cascade = { CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
-	@JoinColumn(name = "avatarReference", nullable = false, updatable = true)
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name="avatarReference", nullable = false, updatable = true)
 	private Document avatar;
-
-	@OneToMany(mappedBy = "table", cascade = { CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
+	
+	@NotNull
+	@OneToMany(mappedBy= "table", cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
 	private Set<Person> players;
-
-	@OneToMany(mappedBy = "table", cascade = { CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
+	
+	@NotNull
+	@OneToMany(mappedBy = "table", cascade = {CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
 	private Set<Game> games;
-
-	protected PokerTable () {
+	
+	protected PokerTable() {
 		this(null);
 	}
-
-
-	public PokerTable (String alias) {
+	
+	public PokerTable(String alias) {
 		super();
 		this.alias = alias;
+		this.players = Collections.emptySet();
+		this.games = Collections.emptySet();
 	}
 
-
-	public String getAlias () {
+	@JsonbProperty @XmlAttribute
+	public String getAlias() {
 		return alias;
 	}
 
-
-	protected void setAlias (String alias) {
+	protected void setAlias(String alias) {
 		this.alias = alias;
 	}
 
-
-	public Document getDocument () {
+	@JsonbProperty @XmlElement
+	public Document getAvatar() {
 		return avatar;
 	}
 
-
-	public void setDocument (Document avatar) {
+	public void setAvatar(Document avatar) {
 		this.avatar = avatar;
 	}
 
-
-	public Set<Person> getPlayers () {
+	@JsonbTransient @XmlTransient
+	public Set<Person> getPlayers() {
 		return players;
 	}
 
-
-	protected void setPlayers (Set<Person> players) {
+	protected void setPlayers(Set<Person> players) {
 		this.players = players;
 	}
 
-
-	public Set<Game> getGames () {
+	@JsonbTransient @XmlTransient
+	public Set<Game> getGames() {
 		return games;
 	}
 
-
-	protected void setGames (Set<Game> games) {
+	protected void setGames(Set<Game> games) {
 		this.games = games;
 	}
-
-
-	@JsonbProperty
-	protected long getAvatarReference () {
+	
+	@JsonbProperty @XmlTransient
+	protected long getAvatarReference() {
 		return this.avatar == null ? 0 : this.avatar.getIdentity();
 	}
-
-
-	@JsonbProperty
-	protected long[] getGameReference () {
-		// TODO: collection-streams 
-		return new long[0];
+	
+	@JsonbProperty @XmlTransient
+	protected long[] getGameReference() {
+		return this.getGames().stream().mapToLong(game -> game.getIdentity()).sorted().toArray();
 	}
-
-
-	@JsonbProperty
-	protected long[] getPlayerReference () {
-		// TODO: 
-		return new long[0];
+	
+	@JsonbProperty @XmlTransient
+	protected long[] getPlayerReference() {
+		return this.getPlayers().stream().mapToLong(player -> player.getIdentity()).sorted().toArray();
 	}
 }
